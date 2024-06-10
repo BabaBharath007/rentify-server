@@ -13,6 +13,16 @@ def index(property: PropertyBase, db: Session = Depends(get_db)):
     db.refresh(db_user)
     return db_user
 
+@app.get("/post/{id}")
+def get_post(id: int,db: Session = Depends(get_db)):
+    post = db.query(Property).filter(Property.id == id).first()
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")  
+    db.commit()
+    db.refresh(post)
+    return post
+
+
 
 @app.get("/")
 def get_users(db: Session = Depends(get_db)):
