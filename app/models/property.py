@@ -6,18 +6,30 @@ class Property(Base):
     __tablename__ = "properties"
     id = Column(Integer, primary_key=True, autoincrement=True)
     userid = Column(Integer)
-    address = Column(String)
+    name = Column(String)
+    street = Column(String)
+    district = Column(String)
+    state = Column(String)
     housetype = Column(String)
     floor = Column(Integer)
     numberofbedroom = Column(Integer)
     numberofbathroom = Column(Integer)
-    other = Column(String)
+    hospital = Column(Integer)
+    school = Column(Integer)
+    college = Column(Integer)
+    price = Column(Integer)
 
 class PropertyBase(BaseModel):
     userid: int
-    address: str
+    name: str
+    street: str
+    district : str
+    state: str
     housetype: str
     floor: int
     numberofbedroom: int
     numberofbathroom: int
-    other: str
+    hospital: int
+    school: int
+    college: int
+    price: int

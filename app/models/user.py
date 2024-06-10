@@ -13,6 +13,11 @@ class User(Base):
     type = Column(Boolean)
 
 
+
+class LoginBase(BaseModel):
+    email: str
+    password: str
+
 class UserBase(BaseModel):
     firstname: str
     lastname: str

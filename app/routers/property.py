@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from fastapi import Depends, APIRouter
+from fastapi import Depends, APIRouter,HTTPException,status
 from app.db.database import get_db
 from app.models.property import Property,PropertyBase
 
@@ -7,7 +7,7 @@ app = APIRouter()
 
 @app.post("/")
 def index(property: PropertyBase, db: Session = Depends(get_db)):
-    db_user = Property(userid=property.userid, address=property.address, housetype=property.housetype, floor =property.floor, numberofbedroom=property.numberofbedroom, numberofbathroom=property.numberofbathroom, other=property.other)
+    db_user = Property(userid=property.userid, name=property.name, street=property.street, district=property.district, state=property.state, housetype=property.housetype, floor =property.floor, numberofbedroom=property.numberofbedroom, numberofbathroom=property.numberofbathroom, hospital=property.hospital,school=property.school,college=property.college,price=property.price)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -18,3 +18,27 @@ def index(property: PropertyBase, db: Session = Depends(get_db)):
 def get_users(db: Session = Depends(get_db)):
     Properties = db.query(Property).all()
     return {"property": Properties}
+
+
+@app.put("/{property_id}")
+def update_property(property_id: int, property_update: PropertyUpdate, db: Session = Depends(get_db)):
+    db_property = db.query(Property).filter(Property.id == property_id).first()
+    if not db_property:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
+    
+    for key, value in property_update.dict(exclude_unset=True).items():
+        setattr(db_property, key, value)
+    
+    db.commit()
+    db.refresh(db_property)
+    return db_property
+
+@app.delete("/{property_id}")
+def delete_property(property_id: int, db: Session = Depends(get_db)):
+    db_property = db.query(Property).filter(Property.id == property_id).first()
+    if not db_property:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
+    
+    db.delete(db_property)
+    db.commit()
+    return db_property
