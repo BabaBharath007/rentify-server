@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from fastapi import Depends, APIRouter,HTTPException,status
 from app.db.database import get_db
-from app.models.property import Property,PropertyBase
+from app.models.property import Property,PropertyBase,PropertyUpdate
 
 app = APIRouter()
 
@@ -20,9 +20,9 @@ def get_users(db: Session = Depends(get_db)):
     return {"property": Properties}
 
 
-@app.put("/{property_id}")
-def update_property(property_id: int, property_update: PropertyUpdate, db: Session = Depends(get_db)):
-    db_property = db.query(Property).filter(Property.id == property_id).first()
+@app.put("/{id}")
+def update_property(id: int, property_update: PropertyUpdate, db: Session = Depends(get_db)):
+    db_property = db.query(Property).filter(Property.id == id).first()
     if not db_property:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
     
@@ -33,9 +33,9 @@ def update_property(property_id: int, property_update: PropertyUpdate, db: Sessi
     db.refresh(db_property)
     return db_property
 
-@app.delete("/{property_id}")
-def delete_property(property_id: int, db: Session = Depends(get_db)):
-    db_property = db.query(Property).filter(Property.id == property_id).first()
+@app.delete("/{id}")
+def delete_property(id: int, db: Session = Depends(get_db)):
+    db_property = db.query(Property).filter(Property.id == id).first()
     if not db_property:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
     

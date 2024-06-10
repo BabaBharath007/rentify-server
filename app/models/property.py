@@ -1,6 +1,7 @@
 from app.db.database import Base
 from sqlalchemy import Column, Integer, String
 from pydantic import BaseModel
+from typing import List, Optional
 
 class Property(Base):
     __tablename__ = "properties"
@@ -33,3 +34,24 @@ class PropertyBase(BaseModel):
     school: int
     college: int
     price: int
+ 
+class PropertyUpdate(BaseModel):
+    name: Optional[str]
+    street: Optional[str]
+    district: Optional[str]
+    state: Optional[str]
+    housetype: Optional[str]
+    floor: Optional[int]
+    numberofbedroom: Optional[int]
+    numberofbathroom: Optional[int]
+    hospital: Optional[int]
+    school: Optional[int]
+    college: Optional[int]
+    price: Optional[int]
+
+
+class PropertyResponse(PropertyBase):
+    id: int
+
+    class Config:
+        orm_mode: True
