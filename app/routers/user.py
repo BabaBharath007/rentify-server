@@ -45,4 +45,4 @@ def login(user: LoginBase, db: Session = Depends(get_db)):
 @app.get("/")
 def get_users(db: Session = Depends(get_db)):
     users = db.query(User).all()
-    return {"users": users}
+    return users

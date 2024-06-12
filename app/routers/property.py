@@ -27,7 +27,7 @@ def get_post(id: int,db: Session = Depends(get_db)):
 @app.get("/")
 def get_users(db: Session = Depends(get_db)):
     Properties = db.query(Property).all()
-    return {"property": Properties}
+    return Properties
 
 
 @app.put("/{id}")
