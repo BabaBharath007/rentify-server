@@ -19,7 +19,7 @@ class Property(Base):
     school = Column(Integer)
     college = Column(Integer)
     price = Column(Integer)
-
+   
 class PropertyBase(BaseModel):
     userid: int
     name: str
@@ -34,6 +34,7 @@ class PropertyBase(BaseModel):
     school: int
     college: int
     price: int
+  
  
 class PropertyUpdate(BaseModel):
     name: Optional[str]
@@ -42,12 +43,13 @@ class PropertyUpdate(BaseModel):
     state: Optional[str]
     housetype: Optional[str]
     floor: Optional[int]
-    numberofbedroom: Optional[int]
+    numberofbedroom: Optional[int]  
     numberofbathroom: Optional[int]
     hospital: Optional[int]
     school: Optional[int]
     college: Optional[int]
     price: Optional[int]
+    imagename:Optional[str]
 
 
 class PropertyResponse(PropertyBase):

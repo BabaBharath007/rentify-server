@@ -1,16 +1,67 @@
 from sqlalchemy.orm import Session
-from fastapi import Depends, APIRouter,HTTPException,status
+from fastapi import Depends, APIRouter,HTTPException,status,File,UploadFile,Form
 from app.db.database import get_db
-from app.models.property import Property,PropertyBase,PropertyUpdate
+from app.models.property import Property,PropertyUpdate
+from app.models.image import Image
+from secrets import token_hex
+import os
 
 app = APIRouter()
 
+image = "./image/"
+
 @app.post("/")
-def index(property: PropertyBase, db: Session = Depends(get_db)):
-    db_user = Property(userid=property.userid, name=property.name, street=property.street, district=property.district, state=property.state, housetype=property.housetype, floor =property.floor, numberofbedroom=property.numberofbedroom, numberofbathroom=property.numberofbathroom, hospital=property.hospital,school=property.school,college=property.college,price=property.price)
+async def index(
+    userid: int = Form(...),
+    name: str = Form(...),
+    street: str = Form(...),
+    district: str = Form(...),
+    state: str = Form(...),
+    housetype: str = Form(...),
+    floor: int = Form(...),
+    numberofbedroom: int = Form(...),
+    numberofbathroom: int = Form(...),
+    hospital: int = Form(...),
+    school: int = Form(...),
+    college: int = Form(...),
+    price: int = Form(...),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+
+    os.makedirs(image, exist_ok=True)
+    
+    file_ext = file.filename.split(".").pop()
+    file_name = token_hex(10)
+    file_path = os.path.join(image, f"{file_name}.{file_ext}")
+    
+    with open(file_path, "wb") as f:
+        content = await file.read()
+        f.write(content)
+    
+    db_user = Property(
+        userid=userid,
+        name=name,
+        street=street,
+        district=district,
+        state=state,
+        housetype=housetype,
+        floor=floor,
+        numberofbedroom=numberofbedroom,
+        numberofbathroom=numberofbathroom,
+        hospital=hospital,
+        school=school,
+        college=college,
+        price=price,
+    )
+    
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    db_img = Image(name=file_path, propertyId=db_user.id)
+    db.add(db_img) 
+    db.commit()  
+    db.refresh(db_img)
     return db_user
 
 @app.get("/post/{id}")
