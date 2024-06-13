@@ -2,6 +2,7 @@ from app.db.database import Base
 from sqlalchemy import Column, Integer, String
 from pydantic import BaseModel
 from typing import List, Optional
+from app.models.image import ImageBase
 
 class Property(Base):
     __tablename__ = "properties"
@@ -34,6 +35,7 @@ class PropertyBase(BaseModel):
     school: int
     college: int
     price: int
+    image: List[ImageBase] = []
   
  
 class PropertyUpdate(BaseModel):

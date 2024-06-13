@@ -1,5 +1,5 @@
 from app.db.database import Base
-from sqlalchemy import Column, Integer, String , Boolean
+from sqlalchemy import Column, Integer, String
 from pydantic import BaseModel
 
 
@@ -13,4 +13,5 @@ class Image(Base):
 
 class ImageBase(BaseModel):
     name: str 
-    propertyId:int   
+    propertyId:int
+    id: int

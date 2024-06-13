@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
 from fastapi import Depends, APIRouter,HTTPException,status,File,UploadFile,Form
 from app.db.database import get_db
-from app.models.property import Property,PropertyUpdate
-from app.models.image import Image
+from sqlalchemy import select, join
+from app.models.property import Property,PropertyUpdate, PropertyBase, List
+from app.models.image import Image, ImageBase
 from secrets import token_hex
 import os
 
@@ -73,12 +74,38 @@ def get_post(id: int,db: Session = Depends(get_db)):
     db.refresh(post)
     return post
 
+@app.get("/", response_model=List[PropertyBase])
+def get_property(page: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    print(limit, page)
 
+    stmt = select(Property).offset(page).limit(limit)
+    properties = db.execute(stmt).scalars().all()
 
-@app.get("/")
-def get_users(db: Session = Depends(get_db)):
-    Properties = db.query(Property).all()
-    return Properties
+    properties_responses = []
+    for property in properties:
+        stmt = select(Image).where(Image.propertyId == property.id)
+        posts = db.execute(stmt).scalars().all()
+        property_response = PropertyBase(
+            id=property.id,
+            name=property.name,
+            userid=property.userid,
+            street=property.street,
+            district=property.district,
+            state=property.state,
+            housetype=property.housetype,
+            floor=property.floor,
+            numberofbedroom=property.numberofbedroom,
+            numberofbathroom=property.numberofbathroom,
+            hospital=property.hospital,
+            school=property.school,
+            college=property.college,
+            price=property.price,
+            image=[]
+        )
+        for post in posts:
+            property_response.image.append(post)
+        properties_responses.append(property_response)
+    return properties_responses
 
 
 @app.put("/{id}")
