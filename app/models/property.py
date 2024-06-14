@@ -22,6 +22,7 @@ class Property(Base):
     price = Column(Integer)
    
 class PropertyBase(BaseModel):
+    id: int
     userid: int
     name: str
     street: str
