@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from fastapi import Depends, APIRouter,HTTPException,status,File,UploadFile,Form
 from app.db.database import get_db
-from sqlalchemy import select, join
+from sqlalchemy import select, join, desc
 from app.models.property import Property,PropertyUpdate, PropertyBase, List
 from app.models.image import Image, ImageBase
 from secrets import token_hex
@@ -78,7 +78,7 @@ def get_post(id: int,db: Session = Depends(get_db)):
 def get_property(page: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     print(limit, page)
 
-    stmt = select(Property).offset(page).limit(limit)
+    stmt = select(Property).order_by(desc(Property.id)).offset(page).limit(limit)
     properties = db.execute(stmt).scalars().all()
 
     properties_responses = []
@@ -113,7 +113,7 @@ def get_property(page: int = 0, limit: int = 10, db: Session = Depends(get_db)):
 def get_user_property(id: int, page: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     print(limit, page)
 
-    stmt = select(Property).where(Property.userid == id).offset(page).limit(limit)
+    stmt = select(Property).order_by(desc(Property.id)).where(Property.userid == id).offset(page).limit(limit)
     properties = db.execute(stmt).scalars().all()
 
     properties_responses = []
