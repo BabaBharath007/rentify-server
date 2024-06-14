@@ -108,6 +108,41 @@ def get_property(page: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return properties_responses
 
 
+
+@app.get("/user/{id}", response_model=List[PropertyBase])
+def get_user_property(id: int, page: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    print(limit, page)
+
+    stmt = select(Property).where(Property.userid == id).offset(page).limit(limit)
+    properties = db.execute(stmt).scalars().all()
+
+    properties_responses = []
+    for property in properties:
+        stmt = select(Image).where(Image.propertyId == property.id)
+        posts = db.execute(stmt).scalars().all()
+        property_response = PropertyBase(
+            id=property.id,
+            name=property.name,
+            userid=property.userid,
+            street=property.street,
+            district=property.district,
+            state=property.state,
+            housetype=property.housetype,
+            floor=property.floor,
+            numberofbedroom=property.numberofbedroom,
+            numberofbathroom=property.numberofbathroom,
+            hospital=property.hospital,
+            school=property.school,
+            college=property.college,
+            price=property.price,
+            image=[]
+        )
+        for post in posts:
+            property_response.image.append(post)
+        properties_responses.append(property_response)
+    return properties_responses
+
+
 @app.put("/{id}")
 def update_property(id: int, property_update: PropertyUpdate, db: Session = Depends(get_db)):
     db_property = db.query(Property).filter(Property.id == id).first()
